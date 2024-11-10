@@ -1,6 +1,9 @@
 # You'll Never SID'em Coming
 This repository contains utility scripts designed to identify users in Active Directory who could be used to perform the SID-based denial-of-service (DoS) attack.
 
+# The Research
+https://pentera.io/resources/research/dos-attack-active-directory-sid-exploitation/
+
 ## Prerequisites
 
 - Active Directory access with necessary privileges for running LDAP queries.
