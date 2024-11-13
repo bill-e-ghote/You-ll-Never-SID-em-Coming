@@ -10,7 +10,7 @@ param(
     [string]$Server = $env:LOGONSERVER -replace "\", ""
 
     [Parameter(Mandatory=$false)]
-    [string]$SearchBase = "LDAP://$Server/example,DC=com"
+    [string]$SearchBase = "LDAP://$Server/DC=example,DC=com"
 )
 
 # Check if Active Directory module is available
