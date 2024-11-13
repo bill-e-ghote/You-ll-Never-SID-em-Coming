@@ -4,7 +4,13 @@ param(
     [string]$JsonOutputPath = "C:\Temp\UserGroupMemberships.json",
 
     [Parameter(Mandatory=$false)]
-    [int]$Threshold = 1000
+    [int]$Threshold = 1000,
+
+    [Parameter(Mandatory=$false)]
+    [string]$Server = $env:LOGONSERVER -replace "\", ""
+
+    [Parameter(Mandatory=$false)]
+    [string]$SearchBase = "LDAP://$Server/example,DC=com"
 )
 
 # Check if Active Directory module is available
@@ -19,9 +25,17 @@ Import-Module ActiveDirectory
 # Start timer
 $startTime = Get-Date
 
+# Define your domain controller and search base
+$DomainController = "dc01.yourdomain.com"  # Replace with your AD server or domain controller hostname
+$SearchBase = "LDAP://$Server/DC=example,DC=com"  # Modify to match your AD structure
+
+# Create a DirectoryEntry object pointing to the specific domain controller
+$Root = New-Object System.DirectoryServices.DirectoryEntry($SearchBase)
+
+
 # Get all user accounts in the domain (including disabled ones)
 Write-Host "Retrieving user accounts..." -ForegroundColor Yellow
-$users = Get-ADUser -Filter * -Properties DistinguishedName, SamAccountName
+$users = Get-ADUser -Filter * -Properties DistinguishedName, SamAccountName -Server $Server
 
 Write-Host "Retrieved $($users.Count) user accounts." -ForegroundColor Green
 
@@ -52,7 +66,7 @@ foreach ($user in $users) {
     $groupCount = 0
 
     # Initialize the DirectorySearcher object for LDAP querying
-    $searcher = New-Object System.DirectoryServices.DirectorySearcher
+    $searcher = New-Object System.DirectoryServices.DirectorySearcher($Root)
     $searcher.Filter = $ldapFilter
     $searcher.SearchScope = [System.DirectoryServices.SearchScope]::Subtree
     $searcher.PageSize = 1000  # Enables paging to handle large result sets
